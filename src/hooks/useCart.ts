@@ -44,7 +44,7 @@ export const useCart = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const updated = await cartService.addToCart(cart.id, product.id, quantity);
+      const updated = await cartService.addToCart(cart.id, product.id || product.id_producto!, quantity);
       setCart(updated);
       setItems(updated.items || []);
     } catch (err) {

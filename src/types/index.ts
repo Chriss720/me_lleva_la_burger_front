@@ -7,6 +7,7 @@ export interface Product {
   precio: number;
   imagen?: string;
   categoria?: string;
+  id_producto?: number;
 }
 
 export interface Customer {

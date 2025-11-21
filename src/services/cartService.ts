@@ -54,14 +54,35 @@ function normalizeCart(raw: any): Cart {
   if (raw.id_carrito && !raw.id) {
     raw.id = raw.id_carrito;
   }
+
+  // Map cartProducts to items if items is missing
+  if (!raw.items && raw.cartProducts) {
+    raw.items = raw.cartProducts;
+  }
+
   // normalize items array if present
   if (Array.isArray(raw.items)) {
     raw.items = raw.items.map((it: any) => {
       // map id fields if present
       if (it.id_carrito_producto && !it.id) it.id = it.id_carrito_producto;
       if (it.id_producto && !it.producto_id) it.producto_id = it.id_producto;
-      // normalize nested product id
-      if (it.product && it.product.id_producto && !it.product.id) it.product.id = it.product.id_producto;
+
+      // normalize nested product
+      if (it.product) {
+        it.producto = it.product;
+        if (it.product.id_producto && !it.product.id) it.product.id = it.product.id_producto;
+      }
+
+      // ensure precio_unitario exists
+      if (!it.precio_unitario && it.producto && it.producto.precio) {
+        it.precio_unitario = Number(it.producto.precio);
+      }
+
+      // calculate subtotal if missing
+      if (!it.subtotal && it.cantidad && it.precio_unitario) {
+        it.subtotal = it.cantidad * it.precio_unitario;
+      }
+
       return it;
     });
   }

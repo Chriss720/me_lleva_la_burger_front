@@ -11,11 +11,11 @@ import { orderService } from '../services/orderService';
 export const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const { products, isLoading: productsLoading } = useProducts();
-    const { items: cartItems, getTotal, loadMyCart, checkout } = useCart();
-    const navigate = useNavigate();
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [ordersLoading, setOrdersLoading] = useState(false);
-    const [showAllProducts, setShowAllProducts] = useState(false);
+  const { items: cartItems, getTotal, loadMyCart, checkout } = useCart();
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [showAllProducts, setShowAllProducts] = useState(false);
 
   // Cargar órdenes del usuario
   useEffect(() => {
@@ -51,8 +51,8 @@ export const Home = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-16 px-8 bg-black text-white">
-        <div className="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
+      <section className="py-20 px-8 md:px-12 bg-black text-white">
+        <div className="flex flex-col md:flex-row items-center gap-16 w-full">
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-4xl md:text-5xl uppercase text-[#FFC72C] leading-tight mb-4 font-oswald font-bold">
               ¿Listo para tu próxima Burger?
@@ -72,8 +72,8 @@ export const Home = () => {
       </section>
 
       {/* Productos */}
-      <section className="py-8 px-8">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-12 px-8 md:px-12">
+        <div className="w-full">
           <h2 className="text-3xl uppercase text-[#FFC72C] mb-8 font-bold text-center md:text-left">Nuestro Menú</h2>
           {productsLoading ? (
             <div className="text-center py-12">
@@ -81,7 +81,7 @@ export const Home = () => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
                 {displayedProducts.map((product) => {
                   const pid = (product as any).id || (product as any).id_producto;
                   const inCartItem = cartItems.find((it) => (it.producto?.id || (it.producto as any)?.id_producto) === pid);
@@ -114,10 +114,10 @@ export const Home = () => {
 
       {/* Sección de Carrito y Pedidos */}
       {isAuthenticated && user && (
-        <section className="py-16 px-8">
-          <div className="max-w-6xl mx-auto">
+        <section className="py-20 px-8 md:px-12">
+          <div className="w-full">
             <h2 className="text-4xl uppercase text-[#FFC72C] mb-8 font-bold">Mis Compras</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Carrito */}
               <div className="bg-[#1a1a1a] rounded-xl p-6 border-2 border-[#FFC72C]">
                 <h3 className="text-2xl text-[#FFC72C] mb-4">Mi Carrito</h3>
