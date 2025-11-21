@@ -23,7 +23,13 @@ export const Login = () => {
     setIsLoading(true);
     try {
       const user = await login(email, password);
-      if (user?.rol_cliente === 'empleado') {
+      console.log('Login user object:', user); // Debug
+
+      // Check for admin/employee role with multiple property names and case insensitivity
+      const role = (user?.tipo || user?.rol_cliente || user?.rol || user?.role || '').toString().toLowerCase();
+      const isEmployee = ['empleado', 'admin', 'employee', 'administrador'].includes(role);
+
+      if (isEmployee) {
         navigate('/admin/dashboard');
       } else {
         navigate('/');

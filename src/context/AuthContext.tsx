@@ -32,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         contrasena_cliente: password,
       });
       const user = (response.usuario || response.user || response.cliente) ?? null;
+      console.log('AuthContext login response user:', user); // Debug
       setUser(user);
       return user;
     } finally {

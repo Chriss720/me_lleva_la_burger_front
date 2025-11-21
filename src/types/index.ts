@@ -19,6 +19,9 @@ export interface Customer {
   rol_cliente?: string;
   nombre?: string;
   apellido?: string;
+  tipo?: 'customer' | 'employee' | string;
+  rol?: string;
+  role?: string;
 }
 
 export interface CartItem {

@@ -25,10 +25,10 @@ export const AdminLayout = ({ children }: Props) => {
         <div className="mt-12 pt-6 border-t border-gray-700">
           <p className="text-sm text-gray-400 mb-2">Sesión</p>
           <div className="text-sm mb-4">
-            <p className="font-bold">{user?.nombre_cliente} {user?.apellido_cliente}</p>
+            <p className="font-bold">{user?.nombre_cliente || user?.nombre} {user?.apellido_cliente || user?.apellido}</p>
             <p className="text-gray-400">{user?.correo_cliente || user?.email}</p>
           </div>
-          <button onClick={() => { logout(); window.location.href='/login'; }} className="w-full bg-[#DA291C] text-white py-2 rounded-lg font-bold hover:bg-[#a81f13]">Cerrar sesión</button>
+          <button onClick={() => { logout(); window.location.href = '/login'; }} className="w-full bg-[#DA291C] text-white py-2 rounded-lg font-bold hover:bg-[#a81f13]">Cerrar sesión</button>
         </div>
       </aside>
 
