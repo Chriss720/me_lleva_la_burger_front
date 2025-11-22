@@ -9,32 +9,43 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product, onAddToCart, isLoading, inCartCount = 0 }: ProductCardProps) => {
   return (
-    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-[#333]">
-      <div className="bg-gray-700 h-48 flex items-center justify-center overflow-hidden">
+    <div className="bg-[#1a1a1a] rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-[#333] flex flex-col h-full">
+      <div className="bg-gray-800 h-72 flex items-center justify-center overflow-hidden relative group">
         {product.imagen ? (
-          <img src={product.imagen} alt={product.nombre_producto} className="w-full h-full object-cover" />
+          <img
+            src={product.imagen}
+            alt={product.nombre_producto}
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+          />
         ) : (
           <div className="text-gray-500 text-center">
-            <p>Sin imagen</p>
+            <p className="text-lg">Sin imagen</p>
+          </div>
+        )}
+        {inCartCount > 0 && (
+          <div className="absolute top-4 right-4 bg-[#DA291C] text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg">
+            {inCartCount} en carrito
           </div>
         )}
       </div>
-      <div className="p-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[#FFC72C] font-bold text-lg mb-2">{product.nombre_producto}</h3>
-          {inCartCount > 0 && (
-            <span className="bg-[#DA291C] text-white text-xs font-bold px-2 py-1 rounded">En carrito: {inCartCount}</span>
-          )}
+
+      <div className="p-6 flex flex-col flex-grow">
+        <div className="mb-4">
+          <h3 className="text-[#FFC72C] font-bold text-2xl mb-3 leading-snug">{product.nombre_producto}</h3>
+          <p className="text-gray-300 text-base line-clamp-3 leading-loose">{product.descripcion}</p>
         </div>
-        <p className="text-gray-300 text-sm mb-3 line-clamp-2">{product.descripcion}</p>
-        <div className="flex justify-between items-center">
-          <span className="text-[#FFC72C] font-bold text-xl">${product.precio}</span>
+
+        <div className="mt-auto flex flex-col gap-4">
+          <div className="flex justify-between items-end border-t border-gray-700 pt-6">
+            <span className="text-white font-bold text-3xl">${product.precio}</span>
+          </div>
+
           <button
             onClick={() => onAddToCart(product)}
             disabled={isLoading}
-            className="bg-[#DA291C] text-white px-4 py-2 rounded-full font-bold hover:bg-[#a81f13] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-[#DA291C] text-white text-lg py-3 px-6 rounded-xl font-bold hover:bg-[#b91c1c] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-red-900/20"
           >
-            {isLoading ? 'Agregando...' : 'Agregar'}
+            {isLoading ? 'Agregando...' : 'Agregar al Carrito'}
           </button>
         </div>
       </div>
