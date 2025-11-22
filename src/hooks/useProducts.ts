@@ -1,47 +1,36 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Product } from '../types';
 import { productService } from '../services/productService';
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadProducts = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await productService.getAllProducts();
-      setProducts(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading products');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
+  const {
+    data: products = [],
+    isLoading,
+    error,
+    refetch: loadProducts,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: productService.getAllProducts,
+  });
 
   const searchProducts = useCallback(async (query: string): Promise<Product[]> => {
-    setIsLoading(true);
-    setError(null);
+    // For search, we might want to keep it manual or use a separate query.
+    // Keeping it manual for now as it returns a promise directly which might be expected by the UI
+    // or we could refactor this later to be a query too.
     try {
       const data = await productService.searchProducts(query);
       return data;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error searching products');
+      console.error(err);
       return [];
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
   return {
     products,
     isLoading,
-    error,
+    error: error ? (error as Error).message : null,
     loadProducts,
     searchProducts,
   };

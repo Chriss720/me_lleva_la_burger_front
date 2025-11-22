@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
+import { LocationPage } from './pages/LocationPage';
+import { ContactPage } from './pages/ContactPage';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/admin/Dashboard';
 import { MenuAdmin } from './pages/admin/Menu';
@@ -20,6 +22,8 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/carts/add/:productId" element={<AddToCart />} />
+        <Route path="/ubicacion" element={<LocationPage />} />
+        <Route path="/contacto" element={<ContactPage />} />
 
         {/* Admin routes */}
         <Route element={<ProtectedRoute />}>

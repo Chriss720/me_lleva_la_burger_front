@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Customer } from '../types';
+import { useMutation } from '@tanstack/react-query';
+import type { Customer, AuthResponse } from '../types';
 import { authService } from '../services/authService';
 
 interface AuthContextType {
   user: Customer | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password:string) => Promise<Customer | null>;
+  login: (email: string, password: string) => Promise<Customer | null>;
   register: (name: string, lastName: string, email: string, password: string, phone?: string) => Promise<void>;
   logout: () => void;
 }
@@ -15,47 +16,53 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<Customer | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     // Cargar usuario al iniciar
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
-    setIsLoading(false);
+    setIsInitializing(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const response = await authService.login({
+  const loginMutation = useMutation({
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+      return authService.login({
         correo_cliente: email,
         contrasena_cliente: password,
       });
+    },
+    onSuccess: (response: AuthResponse) => {
       const user = (response.usuario || response.user || response.cliente) ?? null;
-      console.log('AuthContext login response user:', user); // Debug
+      console.log('AuthContext login response user:', user);
       setUser(user);
-      return user;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
-  const register = async (name: string, lastName: string, email: string, password: string, phone?: string) => {
-    setIsLoading(true);
-    try {
-      const response = await authService.register({
-        nombre_cliente: name,
-        apellido_cliente: lastName,
-        correo_cliente: email,
-        contrasena_cliente: password,
-        telefono_cliente: phone || '',
+  const registerMutation = useMutation({
+    mutationFn: async (data: { name: string; lastName: string; email: string; password: string; phone?: string }) => {
+      return authService.register({
+        nombre_cliente: data.name,
+        apellido_cliente: data.lastName,
+        correo_cliente: data.email,
+        contrasena_cliente: data.password,
+        telefono_cliente: data.phone || '',
         direccion: 'No especificada',
         estado_cliente: 'activo',
       });
+    },
+    onSuccess: (response: AuthResponse) => {
       setUser((response.usuario || response.user || response.cliente) ?? null);
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const login = async (email: string, password: string) => {
+    const response = await loginMutation.mutateAsync({ email, password });
+    return (response.usuario || response.user || response.cliente) ?? null;
+  };
+
+  const register = async (name: string, lastName: string, email: string, password: string, phone?: string) => {
+    await registerMutation.mutateAsync({ name, lastName, email, password, phone });
   };
 
   const logout = () => {
@@ -66,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
-    isLoading,
+    isLoading: isInitializing || loginMutation.isPending || registerMutation.isPending,
     login,
     register,
     logout,
