@@ -44,6 +44,11 @@ export const Header = () => {
       <nav>
         <ul className="flex gap-6 list-none">
           <li>
+            <a href="/" className="text-white text-lg font-normal no-underline pb-1 hover:text-[#FFC72C]">
+              Menú
+            </a>
+          </li>
+          <li>
             <a href="/contacto" className="text-white text-lg font-normal no-underline pb-1 hover:text-[#FFC72C]">
               Contacto
             </a>
@@ -51,11 +56,6 @@ export const Header = () => {
           <li>
             <a href="/ubicacion" className="text-white text-lg font-normal no-underline pb-1 hover:text-[#FFC72C]">
               Ubicación
-            </a>
-          </li>
-          <li>
-            <a href="#" className="text-white text-lg font-normal no-underline pb-1 hover:text-[#FFC72C]">
-              Blog
             </a>
           </li>
         </ul>
