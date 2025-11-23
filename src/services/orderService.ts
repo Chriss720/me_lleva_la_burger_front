@@ -13,7 +13,12 @@ export const orderService = {
   },
 
   getMyOrders: async (): Promise<Order[]> => {
-    const response = await api.get('/orders/my-orders');
+    const userStr = localStorage.getItem('clienteActual');
+    if (!userStr) throw new Error('No active session');
+    const user = JSON.parse(userStr);
+    const userId = user.id || user.id_cliente || user.sub;
+
+    const response = await api.get(`/orders/customer/${userId}`);
     return response.data.data || response.data || [];
   },
 
@@ -23,7 +28,7 @@ export const orderService = {
   },
 
   updateOrderStatus: async (orderId: number, status: string): Promise<Order> => {
-    const response = await api.patch(`/orders/${orderId}`, { estado: status });
+    const response = await api.patch(`/orders/${orderId}/status`, { estado: status });
     return response.data.data || response.data;
   },
 };

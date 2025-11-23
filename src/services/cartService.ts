@@ -9,8 +9,24 @@ export const cartService = {
   },
 
   getMyCart: async (): Promise<Cart> => {
-    const response = await api.get('/carts/me');
+    const userStr = localStorage.getItem('clienteActual');
+    if (!userStr) throw new Error('No active session');
+    const user = JSON.parse(userStr);
+    const userId = user.id || user.id_cliente || user.sub; // Handle various user object shapes
+
+    const response = await api.get(`/carts/customer/${userId}`);
     let payload = response.data.data || response.data;
+
+    // If no cart found (empty array or null), create one
+    if (!payload || (Array.isArray(payload) && payload.length === 0)) {
+      console.log('🛒 No cart found, creating new one...');
+      const createResponse = await api.post('/carts', {
+        id_cliente: userId,
+        estado: 'activo'
+      });
+      payload = createResponse.data.data || createResponse.data;
+    }
+
     // backend may return an array of carts for the customer; return the first one
     if (Array.isArray(payload)) {
       payload = payload[0];
@@ -42,7 +58,7 @@ export const cartService = {
   },
 
   checkout: async (cartId: number): Promise<any> => {
-    const response = await api.post(`/carts/${cartId}/checkout`);
+    const response = await api.post(`/orders/from-cart/${cartId}`);
     const payload = response.data.data || response.data;
     return payload;
   },
