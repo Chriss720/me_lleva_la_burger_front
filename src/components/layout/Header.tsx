@@ -5,7 +5,7 @@ export const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCartMenu, setShowCartMenu] = useState(false);
-  const { getItemCount, items, checkout, getTotal, loadMyCart } = useCart();
+  const { getItemCount, items, getTotal, loadMyCart } = useCart();
 
   useEffect(() => {
     // Cuando el usuario inicia sesión, asegurarnos de cargar su carrito
@@ -149,7 +149,7 @@ export const Header = () => {
             <p className="text-sm text-gray-300">Total:</p>
             <p className="text-[#FFC72C] font-bold text-xl">${getTotal().toFixed(2)}</p>
           </div>
-          <button onClick={async () => { try { await checkout(); window.location.href = '/'; } catch (e) { console.error(e); } }} className="w-full bg-[#DA291C] text-white py-2 rounded-full font-bold hover:bg-[#a81f13]">
+          <button onClick={() => window.location.href = '/checkout'} className="w-full bg-[#DA291C] text-white py-2 rounded-full font-bold hover:bg-[#a81f13]">
             Procesar Pago
           </button>
         </div>

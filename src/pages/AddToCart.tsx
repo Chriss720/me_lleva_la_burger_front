@@ -8,10 +8,10 @@ export const AddToCart = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { loadMyCart, addItem } = useCart();
+  const { addItem, isAdding } = useCart();
   const [product, setProduct] = useState<any | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
-  const [loading, setLoading] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,39 +26,32 @@ export const AddToCart = () => {
       return;
     }
 
-    setLoading(true);
+    setLoadingProduct(true);
     productService
       .getProductById(id)
       .then((p) => setProduct(p))
       .catch((e) => setError(e.message || 'Error cargando producto'))
-      .finally(() => setLoading(false));
-
-    // ensure cart is loaded
-    loadMyCart().catch(() => {});
-  }, [productId, isAuthenticated, navigate, loadMyCart]);
+      .finally(() => setLoadingProduct(false));
+  }, [productId, isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
-    setLoading(true);
     try {
-      // use addItem helper (will call cartService.addToCart)
       await addItem(product, quantity);
       navigate('/');
     } catch (err) {
       console.error(err);
       setError('No se pudo agregar al carrito');
-    } finally {
-      setLoading(false);
     }
   };
 
   if (!isAuthenticated) return null;
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto p-8 bg-black min-h-screen text-white">
       <h2 className="text-2xl font-bold text-[#FFC72C] mb-4">Agregar al carrito</h2>
-      {loading && !product ? (
+      {loadingProduct && !product ? (
         <p>Cargando...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
@@ -66,9 +59,9 @@ export const AddToCart = () => {
         <div className="bg-[#1a1a1a] rounded-lg p-6">
           <div className="flex gap-6 items-center">
             <div className="w-40 h-40 bg-gray-700 flex items-center justify-center overflow-hidden rounded">
-              {product.imagen ? (
+              {product.foto ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.imagen} alt={product.nombre_producto} className="w-full h-full object-cover" />
+                <img src={product.foto} alt={product.nombre_producto} className="w-full h-full object-cover" />
               ) : (
                 <div className="text-gray-500">Sin imagen</div>
               )}
@@ -87,8 +80,8 @@ export const AddToCart = () => {
                   onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
                   className="w-20 p-2 rounded bg-[#111] text-white border border-gray-700"
                 />
-                <button type="submit" disabled={loading} className="bg-[#DA291C] text-white px-4 py-2 rounded-full font-bold">
-                  {loading ? 'Agregando...' : 'Agregar al carrito'}
+                <button type="submit" disabled={isAdding} className="bg-[#DA291C] text-white px-4 py-2 rounded-full font-bold disabled:opacity-50">
+                  {isAdding ? 'Agregando...' : 'Agregar al carrito'}
                 </button>
               </form>
             </div>

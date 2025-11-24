@@ -26,4 +26,7 @@ export const orderService = {
     const response = await api.patch(`/orders/${orderId}`, { estado: status });
     return response.data.data || response.data;
   },
+  deleteOrder: async (orderId: number): Promise<void> => {
+    await api.delete(`/orders/${orderId}`);
+  },
 };

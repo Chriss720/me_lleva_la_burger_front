@@ -4,9 +4,10 @@ export interface Product {
   id: number;
   nombre_producto: string;
   descripcion: string;
+  ingredientes: string;
   precio: number;
-  imagen?: string;
-  categoria?: string;
+  foto?: string;
+  disponibilidad: string;
   id_producto?: number;
 }
 
@@ -28,6 +29,7 @@ export interface Customer {
 export interface CartItem {
   id: number;
   producto_id: number;
+  id_producto?: number; // Backend compatibility
   producto?: Product;
   cantidad: number;
   precio_unitario: number;
@@ -36,20 +38,27 @@ export interface CartItem {
 
 export interface Cart {
   id: number;
+  id_carrito?: number; // Backend compatibility
   cliente_id: number;
+  id_cliente?: number; // Backend compatibility
   items?: CartItem[];
+  cartProducts?: any[]; // Backend compatibility
   total?: number;
   estado?: string;
 }
 
 export interface Order {
   id: number;
+  id_pedido?: number; // Backend compatibility
   cliente_id: number;
+  id_cliente?: number; // Backend compatibility
   numero_orden?: string;
   total: number;
   estado: string;
   fecha_pedido?: string;
   items?: CartItem[];
+  customer?: Customer; // For relations
+  orderProducts?: any[]; // For relations
 }
 
 export interface AuthResponse {

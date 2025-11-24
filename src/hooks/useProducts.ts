@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Product } from '../types';
 import { productService } from '../services/productService';
 
 export const useProducts = () => {
+  const queryClient = useQueryClient();
+
   const {
     data: products = [],
     isLoading,
@@ -14,10 +16,29 @@ export const useProducts = () => {
     queryFn: productService.getAllProducts,
   });
 
+  const createProductMutation = useMutation({
+    mutationFn: productService.createProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<Product> }) =>
+      productService.updateProduct(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+
+  const deleteProductMutation = useMutation({
+    mutationFn: productService.deleteProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+
   const searchProducts = useCallback(async (query: string): Promise<Product[]> => {
-    // For search, we might want to keep it manual or use a separate query.
-    // Keeping it manual for now as it returns a promise directly which might be expected by the UI
-    // or we could refactor this later to be a query too.
     try {
       const data = await productService.searchProducts(query);
       return data;
@@ -33,5 +54,11 @@ export const useProducts = () => {
     error: error ? (error as Error).message : null,
     loadProducts,
     searchProducts,
+    createProduct: createProductMutation.mutateAsync,
+    updateProduct: updateProductMutation.mutateAsync,
+    deleteProduct: deleteProductMutation.mutateAsync,
+    isCreating: createProductMutation.isPending,
+    isUpdating: updateProductMutation.isPending,
+    isDeleting: deleteProductMutation.isPending,
   };
 };
