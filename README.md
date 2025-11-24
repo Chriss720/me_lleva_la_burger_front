@@ -6,6 +6,27 @@ Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Me Lleva La Burger - Frontend
+
+## 🐳 Ejecutar con Docker
+
+Para ejecutar la aplicación en un contenedor aislado:
+
+1.  Asegúrate de tener **Docker Desktop** instalado y corriendo.
+2.  Ejecuta el siguiente comando en la raíz del proyecto:
+
+```bash
+docker compose up --build -d
+```
+
+3.  Abre tu navegador en `http://localhost:8080`.
+
+Para detener la aplicación:
+```bash
+docker compose down
+```
+
+## 🚀 Ejecutar localmente (Desarrollo)
 
 ## React Compiler
 

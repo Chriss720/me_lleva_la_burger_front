@@ -6,8 +6,10 @@ export interface Product {
   descripcion: string;
   ingredientes: string;
   precio: number;
+  imagen?: string;
   foto?: string;
   disponibilidad: string;
+  categoria?: string;
   id_producto?: number;
 }
 

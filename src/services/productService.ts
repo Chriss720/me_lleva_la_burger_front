@@ -3,7 +3,7 @@ import type { Product } from '../types';
 
 export const productService = {
   getAllProducts: async (): Promise<Product[]> => {
-    const response = await api.get('/all-products');
+    const response = await api.get('/products');
     return response.data.data || response.data || [];
   },
 
@@ -13,8 +13,16 @@ export const productService = {
   },
 
   searchProducts: async (query: string): Promise<Product[]> => {
-    const response = await api.get(`/products/search?q=${encodeURIComponent(query)}`);
-    return response.data.data || response.data || [];
+    // Backend doesn't support search, so we fetch all and filter client-side
+    const response = await api.get('/products');
+    const allProducts = response.data.data || response.data || [];
+    if (!query) return allProducts;
+
+    const lowerQuery = query.toLowerCase();
+    return allProducts.filter((p: any) =>
+      p.nombre?.toLowerCase().includes(lowerQuery) ||
+      p.descripcion?.toLowerCase().includes(lowerQuery)
+    );
   },
 
   createProduct: async (payload: Partial<Product>): Promise<Product> => {
@@ -23,7 +31,7 @@ export const productService = {
   },
 
   updateProduct: async (id: number, payload: Partial<Product>): Promise<Product> => {
-    const response = await api.put(`/products/${id}`, payload);
+    const response = await api.patch(`/products/${id}`, payload);
     return response.data.data || response.data;
   },
 
