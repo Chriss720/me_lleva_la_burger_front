@@ -11,9 +11,9 @@ export const ProductCard = ({ product, onAddToCart, isLoading, inCartCount = 0 }
   return (
     <div className="bg-[#1a1a1a] rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-[#333] flex flex-col h-full">
       <div className="bg-gray-800 h-72 flex items-center justify-center overflow-hidden relative group">
-        {product.imagen ? (
+        {product.imagen || product.foto ? (
           <img
-            src={product.imagen}
+            src={product.imagen || product.foto}
             alt={product.nombre_producto}
             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
           />

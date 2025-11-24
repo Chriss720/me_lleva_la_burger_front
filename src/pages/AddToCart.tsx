@@ -58,7 +58,7 @@ export const AddToCart = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-black text-white py-12 px-4">
+      <div className="bg-black text-white py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-oswald font-bold text-[#FFC72C] mb-8 uppercase border-b border-gray-800 pb-4">
             Personalizar Pedido
