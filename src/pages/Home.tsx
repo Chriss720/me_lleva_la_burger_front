@@ -215,7 +215,7 @@ export const Home = () => {
                         </div>
                         <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-700">
                           <span className="text-gray-400 text-sm">Total</span>
-                          <p className="text-[#FFC72C] font-bold text-lg">${order.total.toFixed(2)}</p>
+                          <p className="text-[#FFC72C] font-bold text-lg">${Number(order.total || 0).toFixed(2)}</p>
                         </div>
                       </div>
                     ))}
