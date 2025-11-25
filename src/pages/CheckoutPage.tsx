@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks';
 import { Header } from '../components/layout/Header';
@@ -21,6 +21,13 @@ const CheckoutPage: React.FC = () => {
         title: '',
         message: '',
     });
+    const isMountedRef = useRef(true);
+
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
     const handleQuantityChange = async (product: any, change: number) => {
         if (change > 0) {
@@ -34,30 +41,43 @@ const CheckoutPage: React.FC = () => {
         try {
             setIsProcessing(true);
             await checkout(paymentMethod);
-            setModalState({
-                isOpen: true,
-                type: 'success',
-                title: '¡Pedido Recibido!',
-                message: 'Tu pedido ha sido procesado exitosamente y pronto estará en camino.',
-                imageSrc: '/static/images/RemGracias.gif'
-            });
+            if (isMountedRef.current) {
+                setModalState({
+                    isOpen: true,
+                    type: 'success',
+                    title: '¡Pedido Recibido!',
+                    message: 'Tu pedido ha sido procesado exitosamente y pronto estará en camino.',
+                    imageSrc: '/static/images/RemGracias.gif'
+                });
+            }
         } catch (error) {
             console.error('Error processing checkout:', error);
-            setModalState({
-                isOpen: true,
-                type: 'error',
-                title: 'Error de Pago',
-                message: 'Hubo un error al procesar tu pago. Por favor verifica tu conexión o intenta más tarde.',
-            });
+            if (isMountedRef.current) {
+                setModalState({
+                    isOpen: true,
+                    type: 'error',
+                    title: 'Error de Pago',
+                    message: 'Hubo un error al procesar tu pago. Por favor verifica tu conexión o intenta más tarde.',
+                });
+            }
         } finally {
-            setIsProcessing(false);
+            if (isMountedRef.current) {
+                setIsProcessing(false);
+            }
         }
     };
 
     const handleCloseModal = () => {
+        const wasSuccess = modalState.type === 'success';
         setModalState(prev => ({ ...prev, isOpen: false }));
-        if (modalState.type === 'success') {
-            navigate('/');
+
+        // Usar setTimeout para asegurar que el modal se cierre antes de navegar
+        if (wasSuccess) {
+            setTimeout(() => {
+                if (isMountedRef.current) {
+                    navigate('/');
+                }
+            }, 100);
         }
     };
 

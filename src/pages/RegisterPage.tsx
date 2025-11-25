@@ -18,6 +18,7 @@ const RegisterPage: React.FC = () => {
         setError('');
 
         try {
+            // Registrar el cliente
             await client.post('/customer', {
                 nombre_cliente: nombre,
                 apellido_cliente: apellido,
@@ -28,15 +29,31 @@ const RegisterPage: React.FC = () => {
                 estado_cliente: 'activo'
             });
 
+            // Auto-login después del registro
+            const loginResponse = await client.post('/auth/login/customer', {
+                correo_cliente: email,
+                contrasena_cliente: password,
+            });
+
+            const { access_token, user } = loginResponse.data;
+
+            // Guardar token y usuario
+            if (access_token) {
+                localStorage.setItem('token', access_token);
+            }
+            if (user) {
+                localStorage.setItem('clienteActual', JSON.stringify(user));
+            }
+
             Swal.fire({
                 title: '¡Registro Exitoso!',
-                text: 'Ahora puedes iniciar sesión con tu cuenta.',
+                text: 'Bienvenido a Burger Express',
                 icon: 'success',
                 confirmButtonColor: '#FFC72C',
                 background: '#000',
                 color: '#fff'
             }).then(() => {
-                navigate('/login');
+                navigate('/'); // Redirigir al menú principal
             });
 
         } catch (err: any) {

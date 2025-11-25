@@ -8,19 +8,15 @@ export const authService = {
       contrasena_cliente: credentials.contrasena_cliente || credentials.password,
     });
 
-    const data = response.data.data || response.data;
-    const user = data.usuario || data.user || data.cliente;
+    const { access_token, user } = response.data;
 
-    console.log('🔐 Auth Response:', data);
+    console.log('🔐 Auth Response:', response.data);
     console.log('👤 User Object:', user);
-    console.log('🏷️  User Role:', user?.rol_cliente);
 
     // Guardar token y usuario
-    if (data.access_token || data.token) {
-      const token = data.access_token || data.token;
-      localStorage.setItem('token', token);
-      // Replicate cookie logic from acceder.ejs
-      document.cookie = `Authorization=Bearer ${token}; path=/; max-age=86400`;
+    if (access_token) {
+      localStorage.setItem('token', access_token);
+      document.cookie = `Authorization=Bearer ${access_token}; path=/; max-age=86400`;
       console.log('✅ Token saved to localStorage and Cookie');
     }
     if (user) {
@@ -28,7 +24,7 @@ export const authService = {
       console.log('✅ User saved to localStorage');
     }
 
-    return data;
+    return response.data;
   },
 
   register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {

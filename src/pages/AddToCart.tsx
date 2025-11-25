@@ -43,6 +43,7 @@ export const AddToCart = () => {
     if (!product) return;
     try {
       await addItem(product, quantity);
+      // El refetchQueries en useCart ahora espera a que el carrito se actualice
       navigate('/');
     } catch (err) {
       console.error(err);

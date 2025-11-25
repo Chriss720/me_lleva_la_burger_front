@@ -244,9 +244,10 @@ export const EmpleadosAdmin = () => {
                     required
                   >
                     <option value="">Seleccionar...</option>
-                    <option value="Cajero">Cajero</option>
-                    <option value="Patrona">Patrona</option>
-                    <option value="Gerente">Gerente</option>
+                    <option value="cajero">Cajero</option>
+                    <option value="empleado">Empleado</option>
+                    <option value="encargado">Encargado</option>
+                    <option value="gerente">Gerente</option>
                   </select>
                 </div>
                 <div>

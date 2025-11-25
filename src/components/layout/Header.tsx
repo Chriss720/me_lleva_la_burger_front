@@ -117,7 +117,7 @@ export const Header = () => {
       {!isAuthenticated && showUserMenu && (
         <div className="bg-[#1a1a1a] text-white rounded-lg p-4 shadow-lg w-64 absolute top-20 right-0 z-40">
           <a href="/login" className="text-white text-lg font-bold hover:text-[#FFC72C] block py-2">
-            Ir a Login
+            Ir a Iniciar sesión
           </a>
           <a href="/register" className="text-white text-lg font-bold hover:text-[#FFC72C] block py-2">
             Registrarse

@@ -14,27 +14,21 @@ const LoginPage: React.FC = () => {
         e.preventDefault();
         setError('');
 
+        // Try employee login first
         try {
-            // Usamos el endpoint unificado de login
-            // FIX: Backend espera 'email', no 'correo'
-            const response = await client.post('/auth/login', {
-                email: email,
-                contrasena: password,
+            const employeeResponse = await client.post('/auth/login/employee', {
+                correo_empleado: email,
+                contrasena_empleado: password,
             });
 
-            const { access_token, user } = response.data;
+            const { access_token, user } = employeeResponse.data;
 
             // Mapeamos el usuario para el contexto
-            // El backend devuelve user con id_empleado/id_cliente, necesitamos normalizarlo si es necesario
-            // Asumimos que el backend devuelve { access_token, user: { ... } }
-
-            // Ajuste: El backend puede devolver estructuras diferentes según si es empleado o cliente
-            // Pero para este caso nos enfocamos en empleados/staff
             const userData = {
-                id: user.id_empleado || user.id,
-                email: user.correo_empleado || user.email,
-                role: user.cargo || 'cliente', // 'gerente', 'encargado', 'empleado', 'cajero'
-                nombre: user.nombre_empleado || user.nombre,
+                id: user.id,
+                email: user.email,
+                role: user.cargo, // 'gerente', 'encargado', 'empleado', 'cajero'
+                nombre: user.nombre,
             };
 
             login(access_token, userData);
@@ -42,15 +36,49 @@ const LoginPage: React.FC = () => {
             // Redirección basada en el rol
             const role = (userData.role || '').toLowerCase();
             if (['gerente', 'encargado'].includes(role)) {
-                navigate('/admin/empleados');
+                navigate('/admin/dashboard');
             } else if (['empleado', 'cajero'].includes(role)) {
                 navigate('/staff/pedidos');
             } else {
                 navigate('/'); // Fallback
             }
-        } catch (err: any) {
-            console.error(err);
-            setError('Credenciales inválidas o error en el servidor');
+            return; // Exit after successful employee login
+        } catch (employeeError: any) {
+            // Employee login failed, try client login
+            console.log('Employee login failed, trying client login...');
+
+            try {
+                const clientResponse = await client.post('/auth/login/customer', {
+                    correo_cliente: email,
+                    contrasena_cliente: password,
+                });
+
+                const { access_token, user } = clientResponse.data;
+
+                // Mapear el usuario cliente para el contexto
+                const clientData = {
+                    id: user.id,
+                    email: user.correo_cliente || email,
+                    role: 'cliente', // Indicar que es un cliente
+                    nombre_cliente: user.nombre_cliente,
+                    apellido_cliente: user.apellido_cliente,
+                    correo_cliente: user.correo_cliente,
+                };
+
+                // IMPORTANTE: Usar login() del contexto para que se actualice el estado
+                // y se dispare el useEffect en Header que carga el carrito
+                login(access_token, clientData);
+
+                // También guardar en clienteActual para compatibilidad
+                localStorage.setItem('clienteActual', JSON.stringify(user));
+
+                // Redirigir al menú principal
+                navigate('/');
+            } catch (clientError: any) {
+                // Both employee and client login failed
+                console.error('Both login attempts failed:', { employeeError, clientError });
+                setError('Credenciales inválidas');
+            }
         }
     };
 
@@ -59,7 +87,7 @@ const LoginPage: React.FC = () => {
             <div className="bg-[#1a1a1a] p-8 rounded-lg border-2 border-[#FFC72C] w-full max-w-md">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-extrabold text-[#FFC72C] mb-2 font-oswald">BURGER EXPRESS</h1>
-                    <p className="text-gray-400">Acceso a empleados</p>
+                    <p className="text-gray-400">Inicia sesión para continuar</p>
                 </div>
 
                 {error && (
