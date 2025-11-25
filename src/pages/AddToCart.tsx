@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { productService } from '../services/productService';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../hooks/useCart';
+import { useProduct } from '../hooks/useProducts';
 import { Layout } from '../components/layout/Layout';
 
 export const AddToCart = () => {
@@ -10,10 +10,8 @@ export const AddToCart = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addItem, isAdding, loadMyCart } = useCart();
-  const [product, setProduct] = useState<any | null>(null);
+  const { product, isLoading, error } = useProduct(Number(productId));
   const [quantity, setQuantity] = useState<number>(1);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -21,33 +19,17 @@ export const AddToCart = () => {
       return;
     }
 
-    const id = Number(productId);
-    if (!id) {
-      setError('Producto inválido');
-      return;
-    }
-
-    setLoading(true);
-    productService
-      .getProductById(id)
-      .then((p) => setProduct(p))
-      .catch((e) => setError(e.message || 'Error cargando producto'))
-      .finally(() => setLoading(false));
-
-    // ensure cart is loaded
     loadMyCart().catch(() => { });
-  }, [productId, isAuthenticated, navigate, loadMyCart]);
+  }, [isAuthenticated, navigate, loadMyCart]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
     try {
       await addItem(product, quantity);
-      // El refetchQueries en useCart ahora espera a que el carrito se actualice
       navigate('/');
     } catch (err) {
       console.error(err);
-      setError('No se pudo agregar al carrito');
     }
   };
 
@@ -61,7 +43,7 @@ export const AddToCart = () => {
             Personalizar Pedido
           </h2>
 
-          {loading && !product ? (
+          {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FFC72C] mx-auto mb-4"></div>
               <p className="text-gray-400">Cargando producto...</p>
@@ -137,3 +119,5 @@ export const AddToCart = () => {
     </Layout>
   );
 };
+
+export default AddToCart;

@@ -86,7 +86,7 @@ const LoginPage: React.FC = () => {
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
             <div className="bg-[#1a1a1a] p-8 rounded-lg border-2 border-[#FFC72C] w-full max-w-md">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-extrabold text-[#FFC72C] mb-2 font-oswald">BURGER EXPRESS</h1>
+                    <h1 className="text-4xl font-extrabold text-[#FFC72C] mb-2 font-oswald">Inicia sesion</h1>
                     <p className="text-gray-400">Inicia sesión para continuar</p>
                 </div>
 

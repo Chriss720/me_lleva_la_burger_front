@@ -3,31 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../hooks/useCart';
 import { useProducts } from '../hooks/useProducts';
+import { useOrders } from '../hooks/useOrders';
 import { Layout } from '../components/layout/Layout';
 import { ProductCard } from '../components/common/ProductCard';
-import type { Product, Order } from '../types';
-import { orderService } from '../services/orderService';
+import type { Product } from '../types';
 
 export const Home = () => {
   const { user, isAuthenticated } = useAuth();
   const { products, isLoading: productsLoading } = useProducts();
   const { items: cartItems, getTotal, loadMyCart, checkout } = useCart();
+  const { orders, isLoading: ordersLoading } = useOrders();
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(false);
   const [showAllProducts, setShowAllProducts] = useState(false);
-
-  // Cargar órdenes del usuario
-  useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      setOrdersLoading(true);
-      orderService
-        .getOrdersByCustomer(user.id)
-        .then(setOrders)
-        .catch(console.error)
-        .finally(() => setOrdersLoading(false));
-    }
-  }, [isAuthenticated, user?.id]);
 
   // Mostrar popup de bienvenida cuando el usuario se loguea
   useEffect(() => {
