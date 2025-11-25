@@ -29,6 +29,33 @@ export const Home = () => {
     }
   }, [isAuthenticated, user?.id]);
 
+  // Mostrar popup de bienvenida cuando el usuario se loguea
+  useEffect(() => {
+    const showWelcome = async () => {
+      if (isAuthenticated && user?.id) {
+        const welcomeShown = sessionStorage.getItem(`welcomeShown_${user.id}`);
+        if (!welcomeShown) {
+          const Swal = (await import('sweetalert2')).default;
+          Swal.fire({
+            title: `¡Bienvenido a las mejores Hamburguesas, ${user.nombre || user.email}!`,
+            imageUrl: '/images/RemV.png',
+            imageWidth: 300,
+            imageAlt: 'Bienvenido',
+            background: '#000',
+            color: '#fff',
+            timer: 10000,
+            timerProgressBar: true,
+            confirmButtonColor: '#FFC72C',
+            confirmButtonText: 'Cerrar',
+            showConfirmButton: false
+          });
+          sessionStorage.setItem(`welcomeShown_${user.id}`, 'true');
+        }
+      }
+    };
+    showWelcome();
+  }, [isAuthenticated, user]);
+
   const handleAddToCart = async (product: Product) => {
     // navigate to add-to-cart page so user can select quantity
     if (!isAuthenticated) {
@@ -153,23 +180,30 @@ export const Home = () => {
                     <button
                       onClick={async () => {
                         try {
-                          const res = await checkout();
-                          // optionally, you can show a confirmation to the user
-                          if (res) {
-                            window.alert('Pago procesado correctamente.');
-                            // reload orders
-                            if (user?.id) {
-                              setOrdersLoading(true);
-                              orderService
-                                .getOrdersByCustomer(user.id)
-                                .then(setOrders)
-                                .catch(console.error)
-                                .finally(() => setOrdersLoading(false));
+                          const Swal = (await import('sweetalert2')).default;
+                          Swal.fire({
+                            title: '¡Gracias por su compra, vuelva pronto!',
+                            imageUrl: '/images/RemGracias.gif',
+                            imageWidth: 300,
+                            imageAlt: 'Gracias',
+                            background: '#000',
+                            color: '#fff',
+                            timer: 10000,
+                            timerProgressBar: true,
+                            confirmButtonColor: '#FFC72C',
+                            confirmButtonText: 'Cerrar',
+                            showConfirmButton: false
+                          });
+                          // Procesar checkout después de mostrar el mensaje
+                          setTimeout(async () => {
+                            try {
+                              await checkout('Tarjeta');
+                            } catch (err) {
+                              console.error('Error al procesar pago:', err);
                             }
-                          }
+                          }, 10000);
                         } catch (err) {
-                          console.error('Error during checkout:', err);
-                          window.alert('Ocurrió un error al procesar el pago. Intenta nuevamente.');
+                          console.error('Error:', err);
                         }
                       }}
                       className="w-full bg-[#DA291C] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#a81f13] transition-all shadow-lg hover:shadow-red-900/20"

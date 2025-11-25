@@ -8,29 +8,35 @@ export const cartService = {
     return normalizeCart(payload);
   },
 
-  getMyCart: async (): Promise<Cart> => {
-    const userStr = localStorage.getItem('clienteActual');
-    if (!userStr) throw new Error('No active session');
-    const user = JSON.parse(userStr);
-    const userId = user.id || user.id_cliente || user.sub; // Handle various user object shapes
+  getMyCart: async (customerId: number): Promise<Cart> => {
+    try {
+      const response = await api.get(`/carts/customer/${customerId}`);
+      let payload = response.data.data || response.data;
 
-    const response = await api.get(`/carts/customer/${userId}`);
-    let payload = response.data.data || response.data;
+      if (Array.isArray(payload)) {
+        if (payload.length === 0) {
+          // No cart found, create one
+          return await cartService.createCart(customerId);
+        }
+        payload = payload[0];
+      } else if (!payload) {
+        return await cartService.createCart(customerId);
+      }
 
-    // If no cart found (empty array or null), create one
-    if (!payload || (Array.isArray(payload) && payload.length === 0)) {
-      console.log('🛒 No cart found, creating new one...');
-      const createResponse = await api.post('/carts', {
-        id_cliente: userId,
-        estado: 'activo'
-      });
-      payload = createResponse.data.data || createResponse.data;
+      return normalizeCart(payload);
+    } catch (error) {
+      // If 404 or other error, try to create
+      console.error("Error fetching cart, trying to create one", error);
+      return await cartService.createCart(customerId);
     }
+  },
 
-    // backend may return an array of carts for the customer; return the first one
-    if (Array.isArray(payload)) {
-      payload = payload[0];
-    }
+  createCart: async (customerId: number): Promise<Cart> => {
+    const response = await api.post('/carts', {
+      id_cliente: customerId,
+      estado: 'activo'
+    });
+    const payload = response.data.data || response.data;
     return normalizeCart(payload);
   },
 
@@ -58,7 +64,10 @@ export const cartService = {
   },
 
   checkout: async (cartId: number): Promise<any> => {
-    const response = await api.post(`/orders/from-cart/${cartId}`);
+    // The backend endpoint is /orders/from-cart/:cartId
+    // It optionally takes employeeId query param. We use 1 as a default "system/admin" employee if needed, 
+    // or let backend handle it.
+    const response = await api.post(`/orders/from-cart/${cartId}?employeeId=1`);
     const payload = response.data.data || response.data;
     return payload;
   },

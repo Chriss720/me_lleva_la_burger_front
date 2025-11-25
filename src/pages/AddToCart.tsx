@@ -9,7 +9,7 @@ export const AddToCart = () => {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { loadMyCart, addItem } = useCart();
+  const { addItem, isAdding, loadMyCart } = useCart();
   const [product, setProduct] = useState<any | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [loading, setLoading] = useState(false);
@@ -41,16 +41,12 @@ export const AddToCart = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
-    setLoading(true);
     try {
-      // use addItem helper (will call cartService.addToCart)
       await addItem(product, quantity);
       navigate('/');
     } catch (err) {
       console.error(err);
       setError('No se pudo agregar al carrito');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -126,10 +122,10 @@ export const AddToCart = () => {
 
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={isAdding}
                     className="w-full bg-[#DA291C] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#a81f13] transition-all shadow-lg hover:shadow-red-900/20 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {loading ? 'Agregando...' : 'Agregar al Pedido'}
+                    {isAdding ? 'Agregando...' : 'Agregar al Pedido'}
                   </button>
                 </form>
               </div>
