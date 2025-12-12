@@ -59,7 +59,11 @@ const AdminOrdersPage: React.FC = () => {
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusColor(order.estado)}`}>{order.estado || 'Desconocido'}</span>
                                         </td>
                                         <td className="p-4 text-[#FFC72C] font-bold">${Number(order.total).toFixed(2)}</td>
-                                        <td className="p-4 text-gray-400 text-sm">{new Date(order.fecha_pedido).toLocaleString()}</td>
+                                        <td className="p-4 text-gray-400 text-sm">
+                                            {order.fecha_pedido
+                                                ? new Date(order.fecha_pedido).toLocaleString()
+                                                : 'Fecha no disponible'}
+                                        </td>
                                     </tr>
                                 ))
                             )}

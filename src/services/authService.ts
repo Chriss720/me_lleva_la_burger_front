@@ -10,18 +10,18 @@ export const authService = {
 
     const { access_token, user } = response.data;
 
-    console.log('🔐 Auth Response:', response.data);
-    console.log('👤 User Object:', user);
+    console.log(' Auth Response:', response.data);
+    console.log(' User Object:', user);
 
     // Guardar token y usuario
     if (access_token) {
       localStorage.setItem('token', access_token);
       document.cookie = `Authorization=Bearer ${access_token}; path=/; max-age=86400`;
-      console.log('✅ Token saved to localStorage and Cookie');
+      console.log(' Token saved to localStorage and Cookie');
     }
     if (user) {
       localStorage.setItem('clienteActual', JSON.stringify(user));
-      console.log('✅ User saved to localStorage');
+      console.log(' User saved to localStorage');
     }
 
     return response.data;
